@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>랜덤 숫자 뽑기 (GET 파라미터 범위 적용)</title>
+  <style>
+    /* 기본 스타일 초기화 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* 화면 전체 스타일 */
+    body {
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+
+      /* 은은하게 바뀌는 그라데이션 */
+      background: linear-gradient(135deg, #e0c3fc, #8ec5fc, #f9ecd0, #ffd4e5);
+      background-size: 300% 300%;
+      animation: softGradient 12s ease infinite;
+    }
+
+    /* 배경 그라데이션 흐르는 애니메이션 */
+    @keyframes softGradient {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* 타이틀 */
+    h1 {
+      margin-bottom: 20px;
+      color: #444;
+      font-weight: 600;
+      font-size: 2rem;
+      text-shadow: 0 0 3px rgba(255, 255, 255, 0.6);
+    }
+
+    /* 숫자 박스 스타일 */
+    .number-box {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      /* 초기 상태 */
+      background-color: #fff;
+      color: #333;
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 40px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    /* 부드러운 확대 + 살짝 회전 + 투명도 변화 */
+    @keyframes gentlePop {
+      0% {
+        transform: scale(0.7) rotate(0deg);
+        opacity: 0;
+      }
+      40% {
+        transform: scale(1.2) rotate(10deg);
+        opacity: 1;
+      }
+      60% {
+        transform: scale(0.9) rotate(-5deg);
+      }
+      100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+      }
+    }
+    .gentle-pop {
+      animation: gentlePop 0.8s ease forwards;
+    }
+
+    /* 버튼 스타일 */
+    .btn {
+      padding: 15px 30px;
+      background-color: #333;
+      color: #fff;
+      border: none;
+      border-radius: 30px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+    .btn:hover {
+      background-color: #555;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <h1>랜덤 숫자 뽑기</h1>
+  
+  <!-- 숫자를 표시하는 영역 -->
+  <div id="numberBox" class="number-box">
+    <span id="randomNumber">-</span>
+  </div>
+
+  <!-- 숫자 생성 버튼 -->
+  <button class="btn" onclick="generateRandomNumber()">숫자 뽑기</button>
+
+  <script>
+    /*
+      1) URLSearchParams를 이용해 ?min=10&max=50 같이 GET 파라미터를 가져온다.
+      2) min, max가 숫자가 아니거나 없으면 기본값을 1과 100으로 설정.
+    */
+    const urlParams = new URLSearchParams(window.location.search);
+    let minValue =  1;
+    let maxValue = parseInt(urlParams.get('max'));
+
+    // min 혹은 max가 유효하지 않으면 기본값 설정 (1 ~ 100)
+    if (isNaN(minValue)) minValue = 1;
+    if (isNaN(maxValue)) maxValue = 100;
+
+    /*
+      랜덤 숫자를 생성하는 함수
+      (minValue ~ maxValue 사이의 정수)
+    */
+    function generateRandomNumber() {
+      const randNum = Math.floor(Math.random() * (maxValue - minValue + 1)) + minValue;
+
+      const numberBox = document.getElementById('numberBox');
+      const randomNumberSpan = document.getElementById('randomNumber');
+      
+      // "gentle-pop" 클래스를 제거 후 다시 추가 → 애니메이션 재생
+      numberBox.classList.remove('gentle-pop');
+      void numberBox.offsetWidth; // reflow 트릭
+      numberBox.classList.add('gentle-pop');
+
+      // 숫자 업데이트
+      randomNumberSpan.textContent = randNum;
+    }
+  </script>
+</body>
+</html>
